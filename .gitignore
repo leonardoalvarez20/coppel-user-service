@@ -1,0 +1,33 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+.pytest_cache/
+
+# User-specific stuff:
+.idea/
+.DS_Store
+.vscode/launch.json
+.vscode/settings.json
+
+# Unit test / coverage reports
+htmlcov/
+
+# pyenv
+.python-version
+
+# Environments
+.env
+.venv
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+
+# mypy
+.mypy_cache/
+
+# docker volumes
+db-data
+
+#db files
+*.db

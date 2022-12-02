@@ -1,0 +1,45 @@
+version: '3.7'
+
+networks:
+  app-net:
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: .docker/dockerfile
+    image: fastapi-template_app # Type image's name
+    command: uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
+    volumes:
+      - .:/app
+    env_file:
+      - .env
+    ports:
+      - 8000:8000
+    depends_on:
+      - db
+    networks:
+      - app-net
+
+  db:
+    image: postgres:11.6
+    environment:
+      - POSTGRES_DB=postgres #Type database's name
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+    volumes:
+      - ./db-data:/var/lib/postgresql/data
+    networks:
+      - app-net
+    ports:
+      - "5432:5432"
+
+  migration:
+    environment:
+      - DATABASE_URL
+    image: fastapi-template_app
+    entrypoint: /bin/sh -c "dbmate wait && dbmate up"
+    depends_on:
+      - db
+    networks:
+      - app-net
