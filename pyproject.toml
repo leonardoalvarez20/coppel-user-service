@@ -7,13 +7,15 @@ authors = [ "Leonardo Alvarez <leonardo.alvarez.dev.20@gmail.com>"]
 [tool.poetry.dependencies]
 python = "^3.9"
 fastapi = "^0.85.1"
-SQLAlchemy = "^1.4.42"
 pendulum = "^2.1.2"
 loguru = "^0.6.0"
-psycopg2-binary = "^2.9.5"
 retrying = "^1.3.3"
 secure = "^0.3.0"
 uvicorn = "^0.18.3"
+pymongo = "^4.3.3"
+python-jose = {extras = ["cryptography"], version = "^3.3.0"}
+python-multipart = "^0.0.5"
+passlib = {extras = ["bcrypt"], version = "^1.7.4"}
 
 [tool.poetry.dev-dependencies]
 pytest = "^7.1.3"
@@ -64,7 +66,7 @@ color = true
 
 [tool.vulture]
 ignore_decorators = ["@app.route", "@require_*"]
-paths = ["app", "tests"]
+paths = ["app"]
 ignore_names = ["dialect"]
 min_confidence = 80
 sort_by_size = true
