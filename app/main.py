@@ -1,21 +1,14 @@
 """
 Main file for FastAPI App
 """
-import uvicorn
-
 import secure
-from fastapi import FastAPI, HTTPException, Request, Response
-from psycopg2 import OperationalError
-from retrying import retry
+import uvicorn
+from fastapi import FastAPI
 
 from app import __version__
 from app.api import healthcheck
 from app.api.api_V1.api import api_router
 from app.config.logger import init_logging
-from app.config.settings import settings
-from app.db.session import SessionLocal
-from app.utils.exceptions import DeployError
-
 
 secure_headers = secure.Secure()
 
@@ -27,30 +20,6 @@ fastapi_app = FastAPI(
 
 # Detail logs for development purposes
 fastapi_app.add_event_handler("startup", init_logging)
-
-
-@fastapi_app.middleware("http")
-@retry(
-    retry_on_result=DeployError.db_starting_up,
-    wait_fixed=10000,
-    stop_max_attempt_number=3,
-)
-async def db_session_middleware(request: Request, call_next):
-    """
-    Stablish DB sessions per request, it retries on DB starting up failure
-    - **request**: http request
-    - **call_next**: function that will receive the request as a parameter
-    Return response
-    """
-    response = Response("Internal server error", status_code=500)
-    try:
-        request.state.db = SessionLocal()
-        response = await call_next(request)
-    except OperationalError as e:
-        DeployError.db_starting_up(e)
-    finally:
-        request.state.db.close()
-    return response
 
 
 @fastapi_app.middleware("http")

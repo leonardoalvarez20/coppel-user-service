@@ -11,5 +11,7 @@ class Settings(BaseSettings):
     """
 
     environment: Optional[str]
+    secret_key: Optional[str]
+
 
 settings = Settings()
