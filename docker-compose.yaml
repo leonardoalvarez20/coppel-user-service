@@ -1,13 +1,14 @@
 version: '3.7'
 
 networks:
-  app-net:
+  coppel-challenge-net:
+    external: true
 
 services:
   app:
     build:
       context: .
-      dockerfile: .docker/dockerfile
+      dockerfile: dockerfile
     image: coppel-user-service_app
     command: uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
     volumes:
@@ -17,4 +18,4 @@ services:
     ports:
       - 8000:8000
     networks:
-      - app-net
+      - coppel-challenge-net
