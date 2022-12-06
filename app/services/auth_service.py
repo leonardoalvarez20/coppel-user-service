@@ -1,6 +1,7 @@
 """
 Handles Auth operations
 """
+from bson import ObjectId
 from fastapi import Depends, HTTPException, status
 from fastapi.encoders import jsonable_encoder
 from fastapi.security import OAuth2PasswordRequestForm
@@ -8,7 +9,7 @@ from jose import JWTError
 
 from app.helpers.password_hasher import verify_password
 from app.helpers.token_generator import create_access_token, decode_token
-from app.schemas.user import UserLoginResponse, UserResponse
+from app.schemas.user import PyObjectId, UserLoginResponse, UserResponse
 from app.services.user_service import UserService
 
 
@@ -38,13 +39,15 @@ class AuthService:
         )
 
         try:
-            username = decode_token(token=token)
-            if username is None:
+            user_id = decode_token(token=token)
+            if user_id is None:
                 raise credentials_exception
         except JWTError:
             raise credentials_exception
 
-        user = self.user_service.find_user_by_email(email=username)
+        user = self.user_service.find_user_by_id(
+            user_id=PyObjectId(ObjectId(user_id))
+        )
         if user is None:
             raise credentials_exception
 
@@ -62,6 +65,6 @@ class AuthService:
                 headers={"WWW-Authenticate": "Bearer"},
             )
 
-        token = create_access_token(data={"sub": user.email})
+        token = create_access_token(data={"sub": str(user.id)})
 
         return jsonable_encoder(UserLoginResponse(token=token, **user.dict()))

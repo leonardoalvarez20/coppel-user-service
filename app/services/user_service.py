@@ -38,7 +38,7 @@ class UserService:
         response = UserResponse(
             **{"_id": user_inserted.inserted_id, **user_in.dict()}
         )
-        token = create_access_token({"sub": response.email})
+        token = create_access_token({"sub": str(response.id)})
         return jsonable_encoder(
             UserLoginResponse(token=token, **response.dict())
         )
